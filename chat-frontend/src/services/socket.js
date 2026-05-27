@@ -6,9 +6,7 @@ let client = null
 export const connectSocket = (onMessage) => {
   client = new Client({
     webSocketFactory: () => new SockJS('http://localhost:8080/ws'),
-    connectHeaders: {
-      Authorization: `Bearer ${localStorage.getItem('token')}`,
-    },
+    reconnectDelay: 3000,
     onConnect: () => {
       client.subscribe('/topic/messages', (message) => {
         onMessage(JSON.parse(message.body))
@@ -18,11 +16,11 @@ export const connectSocket = (onMessage) => {
   client.activate()
 }
 
-export const sendSocketMessage = (content) => {
+export const sendSocketMessage = (content, type = 'TEXT') => {
   if (client?.connected) {
     client.publish({
       destination: '/app/chat.send',
-      body: JSON.stringify({ content }),
+      body: JSON.stringify({ content, type }),
     })
   }
 }
