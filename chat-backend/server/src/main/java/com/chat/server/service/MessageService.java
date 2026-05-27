@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+import com.chat.server.dto.MessageResponse;
+
 @Service
 @RequiredArgsConstructor
 public class MessageService {
@@ -28,7 +30,10 @@ public class MessageService {
         return messageRepository.save(message);
     }
 
-    public List<Message> getAllMessages() {
-        return messageRepository.findAllByOrderByCreatedAtAsc();
+    public List<MessageResponse> getAllMessages() {
+        return messageRepository.findAllByOrderByCreatedAtAsc()
+                .stream()
+                .map(MessageResponse::fromEntity)
+                .toList();
     }
 }
